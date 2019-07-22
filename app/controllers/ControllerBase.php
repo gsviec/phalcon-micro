@@ -92,12 +92,7 @@ class ControllerBase extends Controller
         return $this;
     }
 
-    /**
-     * @param $item
-     * @param $callback
-     *
-     * @return JsonResponse
-     */
+
     protected function respondWithItem($item, $callback)
     {
         $resource = new Item($item, $callback);
@@ -107,12 +102,7 @@ class ControllerBase extends Controller
         return $this->respondWithArray($rootScope->toArray());
     }
 
-    /**
-     * @param $collection
-     * @param $callback
-     *
-     * @return JsonResponse
-     */
+
     protected function respondWithCollection($collection, $callback)
     {
         $resource = new Collection($collection, $callback);
@@ -121,28 +111,19 @@ class ControllerBase extends Controller
         return $this->respondWithArray($rootScope->toArray());
     }
 
-    /**
-     * @param $collection
-     * @param $callback
-     *
-     * @return JsonResponse
-     */
+
     protected function respondWithPagination($paginator, $callback)
     {
         $pagination = $paginator->getPaginate();
         $resource = new Collection($pagination->items, $callback);
         $resource->setPaginator(new PhalconFrameworkPaginatorAdapter($pagination));
 
-        $rootScope = $this->fractal->createData($resource);
+        $fractal = new League\Fractal\Manager();
+        $rootScope = $fractal->createData($resource);
         return $this->respondWithArray($rootScope->toArray());
     }
 
-    /**
-     * @param $paginator
-     * @param $callback
-     *
-     * @return JsonResponse
-     */
+
     protected function respondWithCursor($paginator, $callback)
     {
         $pagination = $paginator->getPaginate();
@@ -160,10 +141,10 @@ class ControllerBase extends Controller
     }
 
     /**
-     * @param array $array
+     * @param array $data
      * @param array $headers
      *
-     * @return JsonResponse
+     * @return \Phalcon\Http\ResponseInterface
      */
     protected function respondWithArray(array $data, array $headers = [])
     {
@@ -175,9 +156,9 @@ class ControllerBase extends Controller
 
     /**
      * @param $message
-     * @param $errorCode
+     * @param string $errorCode
      *
-     * @return JsonResponse
+     * @return \Phalcon\Http\ResponseInterface
      */
     protected function respondWithError($message, $errorCode = '400')
     {
@@ -204,9 +185,9 @@ class ControllerBase extends Controller
     }
 
     /**
-     * Generates a Response with a 403 HTTP header and a given message.
+     * @param string $message
      *
-     * @return JsonResponse
+     * @return \Phalcon\Http\ResponseInterface
      */
     public function errorForbidden($message = 'Forbidden')
     {
@@ -215,9 +196,9 @@ class ControllerBase extends Controller
     }
 
     /**
-     * Generates a Response with a 500 HTTP header and a given message.
+     * @param string $message
      *
-     * @return JsonResponse
+     * @return \Phalcon\Http\ResponseInterface
      */
     public function errorInternalError($message = 'Internal Error')
     {
@@ -225,9 +206,9 @@ class ControllerBase extends Controller
     }
 
     /**
-     * Generates a Response with a 404 HTTP header and a given message.
+     * @param string $message
      *
-     * @return JsonResponse
+     * @return \Phalcon\Http\ResponseInterface
      */
     public function errorNotFound($message = 'Resource Not Found')
     {
@@ -235,9 +216,9 @@ class ControllerBase extends Controller
     }
 
     /**
-     * Generates a Response with a 401 HTTP header and a given message.
+     * @param string $message
      *
-     * @return JsonResponse
+     * @return \Phalcon\Http\ResponseInterface
      */
     public function errorUnauthorized($message = 'Unauthorized')
     {
@@ -246,9 +227,9 @@ class ControllerBase extends Controller
     }
 
     /**
-     * Generates a Response with a 400 HTTP header and a given message.
+     * @param string $message
      *
-     * @return JsonResponse
+     * @return \Phalcon\Http\ResponseInterface
      */
     public function errorWrongArgs($message = 'Wrong Arguments')
     {
@@ -256,9 +237,9 @@ class ControllerBase extends Controller
     }
 
     /**
-     * Generates a Response with a 400 HTTP header and a given message.
+     * @param string $message
      *
-     * @return JsonResponse
+     * @return \Phalcon\Http\ResponseInterface
      */
     public function errorWrongData($message = 'Wrong Data')
     {
@@ -354,58 +335,15 @@ class ControllerBase extends Controller
     /**
      * @param Dispatcher $dispatcher
      *
-     * @return Response|void
+     * @return void
      */
     public function beforeExecuteRoute(Dispatcher $dispatcher)
     {
-        // $server = $this->oauth->server;
-        // $action = $dispatcher->getActionName();
-        // $module = $dispatcher->getActiveController()->getModuleName();
-        // $resourceName = $module . '-' . $dispatcher->getControllerName();
-        // $request = OAuth2Request::createFromGlobals(); // MYSQL USE NAMES
-
-        // //Skip if is a controller name token;
-        // if ($resourceName == 'token-token') {
-        //     return; // @TODO should be exit??
-        // }
-
-        // // Get token, returns null if is invalid and is caught below
-        // $token = $server->getAccessTokenData($request);
-
-        // if (!$token) {
-        //     $server->getResponse()->send();
-        //     exit;
-        // }
-
-        // $userId = $token['user_id'];
-        // $user   = User::getUserById($userId);
-
-        // //Register user object to use check tenant
-        // if (is_object($user)) {
-        //     $this->di->set('user', $user, true);
-        // }
-
-        // //Attack event ACL at here
-        // if (!$this->acl->checkAcl($user['grp_name'], $resourceName, $action)) {
-        //     $this->errorUnauthorized();
-        //     exit;
-        // }
-//        var_dump(111);
-//
-//
-//        $token = $this->request->get('access_token');
-//        $header = $this->request->getHeaders();
-//        $this->respondWithError($header['Token']);
-//        //d($header);
-//        exit(1);
-//        if (!isset($token)) {
-//            //$this->errorUnauthorized();
-//            //exit(1);
-//        }
+        //@TODO
     }
 
     /**
-     * Turns URL paramaters with public options into SQL where queries using the actual database fields
+     * Turns URL parameters with public options into SQL where queries using the actual database fields
      *
      * @param $config
      * @param $columnMap
@@ -433,7 +371,7 @@ class ControllerBase extends Controller
     }
 
     /**
-     * Turns URL fields public paramaters into private sql column names
+     * Turns URL fields public parameters into private sql column names
      *
      * @param $config
      * @param $columnMap

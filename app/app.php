@@ -12,7 +12,7 @@ $users = new MicroCollection();
 $users->setHandler(new UsersController());
 // Set a common prefix for all routes
 $users->setPrefix('/users');
-$users->get('/', 'index');
+$users->get('/', 'list');
 $users->post('/', 'add');
 
 // Use the method 'show' in usersController

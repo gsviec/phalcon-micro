@@ -386,7 +386,7 @@ class Users extends Model
     }
 
     /**
-     * Returns the value of field birthdate
+     * Returns the value of field birth date
      *
      * @return integer
      */
@@ -432,7 +432,6 @@ class Users extends Model
      */
     public function initialize()
     {
-        $this->setSchema("gsviec");
         $this->setSource("users");
     }
 
@@ -476,6 +475,15 @@ class Users extends Model
         $this->gender = 'male';
     }
 
+    /**
+     * @param $email
+     *
+     * @return mixed
+     */
+    public static function findFirstByEmail($email)
+    {
+        return self::findFirstByEmail($email);
+    }
     /**
      * Independent Column Mapping.
      * Keys are the real names in the table and the values their names in the application

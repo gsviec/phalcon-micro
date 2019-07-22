@@ -24,6 +24,7 @@ return new Config([
         'controllersDir' => APP_PATH . '/controllers/',
         'migrationsDir' => APP_PATH . '/migrations/',
         'viewsDir' => APP_PATH . '/views/',
-        'baseUri' => '/simple/',
+        'baseUri' => '/',
+        'transformersDir' => APP_PATH . '/transformers/'
     ]
 ]);

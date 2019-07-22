@@ -7,6 +7,13 @@ class UsersController extends ControllerBase
         var_dump('expression');
     }
 
+    public function list()
+    {
+        $users = Users::find();
+        $config = [];
+        $pagination = $this->pagination($users);
+        return $this->respondWithPagination($pagination, new UsersTransformer($config));
+    }
     public function add()
     {
         $data = $this->parserDataRequest();
