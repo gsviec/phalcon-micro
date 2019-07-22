@@ -1,15 +1,16 @@
 <?php
+
+use App\Models\ModelBase;
+use App\Responses\JsonResponse;
+use League\Fractal\Pagination\Cursor;
+use League\Fractal\Pagination\PhalconFrameworkPaginatorAdapter;
+use League\Fractal\Resource\Collection;
+use League\Fractal\Resource\Item;
 use Phalcon\Mvc\Controller;
 use Phalcon\Mvc\Dispatcher;
 use Phalcon\Paginator\Adapter\Model as PaginatorModel;
-use Phalcon\Paginator\Adapter\QueryBuilder as PaginatorQueryBuilder;
 use Phalcon\Paginator\Adapter\NativeArray as PaginatorNativeArray;
-use League\Fractal\Resource\Collection;
-use League\Fractal\Resource\Item;
-use League\Fractal\Pagination\Cursor;
-use App\Responses\JsonResponse;
-use App\Models\ModelBase;
-use League\Fractal\Pagination\PhalconFrameworkPaginatorAdapter;
+use Phalcon\Paginator\Adapter\QueryBuilder as PaginatorQueryBuilder;
 
 /**
  * Class ControllerBase
@@ -20,31 +21,31 @@ class ControllerBase extends Controller
 {
     /**
      * @constant string name of api with the 400 client error
-     * @link http://www.restapitutorial.com/httpstatuscodes.html
+     * @link     http://www.restapitutorial.com/httpstatuscodes.html
      */
-    const CODE_WRONG_ARGS       = 'GEN-FUBARGS';
+    const CODE_WRONG_ARGS = 'GEN-FUBARGS';
 
     /**
      * @constant string name of api with the 404 client error
      */
-    const CODE_NOT_FOUND        = 'GEN-LIKETHEWIND';
+    const CODE_NOT_FOUND = 'GEN-LIKETHEWIND';
 
     /**
      * @constant string name of api with the 500 server error
      */
-    const CODE_INTERNAL_ERROR   = 'GEN-AAAGGH';
+    const CODE_INTERNAL_ERROR = 'GEN-AAAGGH';
 
     /**
      * @constant string name of api with the 401 client error
      */
-    const CODE_UNAUTHORIZED     = 'GEN-MAYBGTFO';
+    const CODE_UNAUTHORIZED = 'GEN-MAYBGTFO';
 
     /**
      * @constant string name of api with the 403 client error
      */
-    const CODE_FORBIDDEN        = 'GEN-GTFO';
+    const CODE_FORBIDDEN = 'GEN-GTFO';
 
-    const CODE_WRONG_DATA       = 'GEN-DATA';
+    const CODE_WRONG_DATA = 'GEN-DATA';
 
     /**
      *
@@ -94,6 +95,7 @@ class ControllerBase extends Controller
     /**
      * @param $item
      * @param $callback
+     *
      * @return JsonResponse
      */
     protected function respondWithItem($item, $callback)
@@ -108,6 +110,7 @@ class ControllerBase extends Controller
     /**
      * @param $collection
      * @param $callback
+     *
      * @return JsonResponse
      */
     protected function respondWithCollection($collection, $callback)
@@ -121,6 +124,7 @@ class ControllerBase extends Controller
     /**
      * @param $collection
      * @param $callback
+     *
      * @return JsonResponse
      */
     protected function respondWithPagination($paginator, $callback)
@@ -136,6 +140,7 @@ class ControllerBase extends Controller
     /**
      * @param $paginator
      * @param $callback
+     *
      * @return JsonResponse
      */
     protected function respondWithCursor($paginator, $callback)
@@ -157,11 +162,12 @@ class ControllerBase extends Controller
     /**
      * @param array $array
      * @param array $headers
+     *
      * @return JsonResponse
      */
     protected function respondWithArray(array $data, array $headers = [])
     {
-        $response =  new Phalcon\Http\Response();
+        $response = new Phalcon\Http\Response();
         $response->setContentType('application/json', 'UTF-8');
 
         return $response->setContent(json_encode($data, JSON_NUMERIC_CHECK));
@@ -170,6 +176,7 @@ class ControllerBase extends Controller
     /**
      * @param $message
      * @param $errorCode
+     *
      * @return JsonResponse
      */
     protected function respondWithError($message, $errorCode = '400')
@@ -260,12 +267,13 @@ class ControllerBase extends Controller
 
     /**
      * @param $query
+     *
      * @return PaginatorQueryBuilder
      */
     public function pagination($query)
     {
-        $page     = $this->request->getQuery('page') ?  : 1;
-        $perPage  = $this->request->getQuery('limit') ? : $this->perPage;
+        $page = $this->request->getQuery('page') ?: 1;
+        $perPage = $this->request->getQuery('limit') ?: $this->perPage;
         if (is_object($query)) {
             $paginator = new PaginatorModel([
                 'data' => $query,
@@ -273,12 +281,12 @@ class ControllerBase extends Controller
                 'page' => $page
             ]);
         } elseif (isset($query['model'])) {
-            $builder  = ModelBase::modelQuery($query);
-            $paginator  = new PaginatorQueryBuilder(
+            $builder = ModelBase::modelQuery($query);
+            $paginator = new PaginatorQueryBuilder(
                 [
-                    'builder'   => $builder,
-                    'limit'     => $perPage,
-                    'page'      => $page
+                    'builder' => $builder,
+                    'limit' => $perPage,
+                    'page' => $page
                 ]
             );
         } else {
@@ -293,11 +301,12 @@ class ControllerBase extends Controller
 
     /**
      * @param $query
+     *
      * @return mixed
      */
     public function getOne($query)
     {
-        $builder  = ModelBase::modelQuery($query);
+        $builder = ModelBase::modelQuery($query);
         return $builder
             ->getQuery()
             ->setUniqueRow(true)
@@ -309,8 +318,8 @@ class ControllerBase extends Controller
      */
     public function getParameter()
     {
-        $query  = $this->request->getQuery();
-        $query  = array_filter($query, function ($val) {
+        $query = $this->request->getQuery();
+        $query = array_filter($query, function ($val) {
             return !empty($val);
         });
         //define the fields required for a partial response.
@@ -344,6 +353,7 @@ class ControllerBase extends Controller
 
     /**
      * @param Dispatcher $dispatcher
+     *
      * @return Response|void
      */
     public function beforeExecuteRoute(Dispatcher $dispatcher)
@@ -399,11 +409,12 @@ class ControllerBase extends Controller
      *
      * @param $config
      * @param $columnMap
+     *
      * @return array
      */
     public function filterResults($config, $columnMap)
     {
-        $where  = [];
+        $where = [];
         $bind = [];
 
         // Loop through each URL parameter and build the sql where queries
@@ -418,7 +429,7 @@ class ControllerBase extends Controller
             }
         }
 
-        return [$where,$bind];
+        return [$where, $bind];
     }
 
     /**
@@ -426,6 +437,7 @@ class ControllerBase extends Controller
      *
      * @param $config
      * @param $columnMap
+     *
      * @return array
      */
     public function refineFields($config, $columnMap)

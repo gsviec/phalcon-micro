@@ -3,7 +3,10 @@
 /**
  * Registering an autoloader
  */
-$loader = new \Phalcon\Loader();
+
+use Phalcon\Loader;
+
+$loader = new Loader();
 
 $loader->registerDirs(
     [

@@ -1,9 +1,12 @@
 <?php
 /**
  * Local variables
- * @var \Phalcon\Mvc\Micro $app
+ * @var Micro $app
  */
+
+use Phalcon\Mvc\Micro;
 use Phalcon\Mvc\Micro\Collection as MicroCollection;
+
 $users = new MicroCollection();
 // Set the main handler. ie. a controller instance
 $users->setHandler(new UsersController());
@@ -24,11 +27,10 @@ $app->get('/', function () {
 });
 
 
-
 /**
  * Not found handler
  */
-$app->notFound(function () use($app) {
+$app->notFound(function () use ($app) {
     $app->response->setStatusCode(404, "Not Found")->sendHeaders();
     echo $app['view']->render('404');
 });
