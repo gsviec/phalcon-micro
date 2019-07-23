@@ -11,6 +11,7 @@ $loader = new Loader();
 $loader->registerDirs(
     [
         $config->application->modelsDir,
+        $config->application->libraryDir,
         $config->application->controllersDir,
         $config->application->transformersDir
     ]

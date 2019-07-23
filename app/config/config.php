@@ -25,6 +25,8 @@ return new Config([
         'migrationsDir' => APP_PATH . '/migrations/',
         'viewsDir' => APP_PATH . '/views/',
         'baseUri' => '/',
-        'transformersDir' => APP_PATH . '/transformers/'
+        'libraryDir' => APP_PATH . '/library/',
+        'transformersDir' => APP_PATH . '/transformers/',
+        'jwtSecret' => getenv('JWT_SECRET')
     ]
 ]);

@@ -42,6 +42,8 @@ try {
      */
     include APP_PATH . '/app.php';
 
+    $app->setEventsManager($eventsManager);
+
     /**
      * Handle the request
      */

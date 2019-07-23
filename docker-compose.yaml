@@ -30,6 +30,8 @@ services:
        APPLICATION_ENV: development
        REDIS_HOST: redis-master
        PHP_DISPLAY_ERRORS: 'On'
+       APACHE_SERVER_NAME: 'gsviec.dev'
+       JWT_SECRET: gsviec
     phpmyadmin:
       restart: 'no'
       image: phpmyadmin/phpmyadmin:4.6

@@ -2,6 +2,7 @@
 
 use App\Models\ModelBase;
 use App\Responses\JsonResponse;
+use League\Fractal\Manager;
 use League\Fractal\Pagination\Cursor;
 use League\Fractal\Pagination\PhalconFrameworkPaginatorAdapter;
 use League\Fractal\Resource\Collection;
@@ -96,8 +97,8 @@ class ControllerBase extends Controller
     protected function respondWithItem($item, $callback)
     {
         $resource = new Item($item, $callback);
-
-        $rootScope = $this->fractal->createData($resource);
+        $fractal = new League\Fractal\Manager();
+        $rootScope = $fractal->createData($resource);
 
         return $this->respondWithArray($rootScope->toArray());
     }
@@ -106,7 +107,8 @@ class ControllerBase extends Controller
     protected function respondWithCollection($collection, $callback)
     {
         $resource = new Collection($collection, $callback);
-        $rootScope = $this->fractal->createData($resource);
+        $fractal = new League\Fractal\Manager();
+        $rootScope = $fractal->createData($resource);
 
         return $this->respondWithArray($rootScope->toArray());
     }
@@ -330,64 +332,5 @@ class ControllerBase extends Controller
             }
         }
         return $posts;
-    }
-
-    /**
-     * @param Dispatcher $dispatcher
-     *
-     * @return void
-     */
-    public function beforeExecuteRoute(Dispatcher $dispatcher)
-    {
-        //@TODO
-    }
-
-    /**
-     * Turns URL parameters with public options into SQL where queries using the actual database fields
-     *
-     * @param $config
-     * @param $columnMap
-     *
-     * @return array
-     */
-    public function filterResults($config, $columnMap)
-    {
-        $where = [];
-        $bind = [];
-
-        // Loop through each URL parameter and build the sql where queries
-        foreach ($config as $confKey => $confValue) {
-            // Avoid the private _url field
-            if (substr($confKey, 0, 1) != '_') {
-                // If this field has a value in our API Config, we know it is a genuine column in the database
-                if (isset($columnMap[$confKey]) !== false) {
-                    $where[] = "$columnMap[$confKey] = :$confKey";
-                    $bind[$confKey] = $confValue;
-                }
-            }
-        }
-
-        return [$where, $bind];
-    }
-
-    /**
-     * Turns URL fields public parameters into private sql column names
-     *
-     * @param $config
-     * @param $columnMap
-     *
-     * @return array
-     */
-    public function refineFields($config, $columnMap)
-    {
-        $columns = [];
-        // If the user only wants some fields returned, get the private columns and pass onto our sql query
-        if (isset($config['fields'])) {
-            $fields = $config['fields'];
-            foreach ($fields as $field) {
-                $columns[] = $columnMap[$field];
-            }
-        }
-        return $columns;
     }
 }

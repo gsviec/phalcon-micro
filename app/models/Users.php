@@ -476,15 +476,6 @@ class Users extends Model
     }
 
     /**
-     * @param $email
-     *
-     * @return mixed
-     */
-    public static function findFirstByEmail($email)
-    {
-        return self::findFirstByEmail($email);
-    }
-    /**
      * Independent Column Mapping.
      * Keys are the real names in the table and the values their names in the application
      *
@@ -508,5 +499,29 @@ class Users extends Model
             'createdAt' => 'createdAt'
         ];
     }
+    public static function findFirstByEmail($parameters = null)
+    {
+        return parent::findFirstByEmail($parameters);
+    }
+    public  function getUserByEmailAndPassword($credentials)
+    {
+        $user = Users::findFirstByEmail($credentials['email']);
+
+        if (!$user) {
+            //$this->registerUserThrottling(0);
+            return false;
+        }
+
+        $di = \Phalcon\Di\FactoryDefault::getDefault();
+        // Check the password
+        if (!$di->get('security')->checkHash($credentials['password'], $user->getPassword())){
+            return false;
+        }
+        // Check if the user was flagged
+
+        return true;
+    }
+
 
 }
+
