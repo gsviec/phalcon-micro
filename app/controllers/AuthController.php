@@ -7,8 +7,8 @@ class AuthController extends ControllerBase
     public function login()
     {
         $parameter = $this->parserDataRequest();
-        $user = new Users();
-        if (!$user->getUserByEmailAndPassword($parameter)) {
+        $user = Users::getUserByEmailAndPassword($parameter);
+        if (!$user) {
             dd('Hack!');
         }
         $key = base64_decode($this->config->application->jwtSecret);
@@ -16,11 +16,11 @@ class AuthController extends ControllerBase
         $token = [
             'iss' =>  'http://lackky.com',
             'iat' =>  $time,
-            'exp' =>  $time + 8640,
+            'exp' =>  $time + 86400,
             'data' =>[
-                'email' => $parameter['email']
+                'email' => $user->getEmail(),
+                'id' => $user->getId()
             ]
-
         ];
         $jwt = JWT::encode($token, $key);
         return $this->respondWithArray([
@@ -32,6 +32,11 @@ class AuthController extends ControllerBase
     public function check()
     {
 
+    }
+
+    public function logout()
+    {
+        
     }
 
 }

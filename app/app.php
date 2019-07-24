@@ -16,7 +16,10 @@ $users = new MicroCollection();
 $users->setHandler(new UsersController());
 $users->setPrefix('/users');
 $users->get('/', 'list');
+$users->get('/{email}', 'item');
 $users->post('/', 'add');
+$users->put('/{id}', 'update');
+
 $app->mount($users);
 
 $auth = new MicroCollection();

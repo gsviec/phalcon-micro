@@ -11,16 +11,22 @@ use Phalcon\Mvc\Micro\MiddlewareInterface;
  */
 class AuthenticationMiddleware implements MiddlewareInterface
 {
+
+    public function beforeHandleRoute(Event $event, Micro $app)
+    {
+        //@TODO
+    }
+
     /**
      * @param Event $event
      * @param Micro $app
      *
      * @return bool
      */
-    public function beforeHandleRoute(Event $event, Micro $app)
+    public function beforeExecuteRoute(Event $event, Micro $app)
     {
-        $action = ['add'];
-        if (in_array($app->getActiveHandler()[1], $action)) {
+
+        if ($this->isUnsecuredRoute($app)) {
             return true;
         }
         $authHeader= $app->request->getHeader('authorization');
@@ -30,6 +36,8 @@ class AuthenticationMiddleware implements MiddlewareInterface
             if (isset($jwt[1])) {
                 try {
                     $decoded = JWT::decode($jwt[1], $key, ['HS256']);
+                    // Send data auth for via cookies
+                    $app->cookies->set('auth', $decoded);
                 } catch (Exception $e) {
                     header('HTTP/1.0 401 Unauthorized');
                     die('Unauthorized');
@@ -52,5 +60,27 @@ class AuthenticationMiddleware implements MiddlewareInterface
     public function call(Micro $api)
     {
         return true;
+    }
+
+    /**
+     * @param Micro $app
+     *
+     * @return bool
+     */
+    private function isUnsecuredRoute(Micro $app)
+    {
+        $unsecuredRoutes = [
+            ['router' => '/auth', 'action' => 'login'],
+            ['router' => '/users', 'action' => 'add']
+        ];
+        foreach ($unsecuredRoutes as $route) {
+            if ($route['router'] == $app->getRouter()->getRewriteUri()
+                && $route['action'] == $app->getActiveHandler()[1]
+            ) {
+                return true;
+            }
+        }
+
+        return false;
     }
 }
