@@ -44,6 +44,7 @@ class UsersController extends ControllerBase
         if ($user) {
             return $this->respondWithError('That email is taken. Try another');
         }
+        $user = new Users();
         $data['password'] = $this->security->hash($data['password']);
 
         if (!$user->save($data)) {
@@ -51,7 +52,7 @@ class UsersController extends ControllerBase
                 return $this->respondWithError('Add user fall');
             }
         }
-        return $this->respondWithSuccess('Add user success');
+        return $this->respondWithItem($user, new UsersTransformer([]));
     }
     public function update()
     {
@@ -71,5 +72,38 @@ class UsersController extends ControllerBase
             }
         }
         return $this->respondWithSuccess('Update user success');
+    }
+    public function avatar()
+    {
+        $file = $_FILES['file'] ?? [];
+        if (!isset($file)) {
+            return $this->respondWithError('Nothing a data file', 404);
+        }
+        //File need small then 50M
+        if (!isset($file['size']) || $file['size'] > 52428800) {
+            return $this->respondWithError('Sorry, your file is too large', 404);
+        }
+
+        if ($this->request->hasFiles()) {
+            $files = $this->request->getUploadedFiles();
+            // Print the real file names and sizes
+            foreach ($files as $file) {
+                $fileName = md5($this->getCurrentUser()->id);
+                // Move the file into the application
+                $file->moveTo(
+                    'files/' . $fileName . '.png'
+                );
+                $user = Users::findFirst($this->getCurrentUser()->id);
+                if (!$user) {
+                    //@TODO
+                    return $this->respondWithError('Unauthorized');
+                }
+                $user->setAvatar($fileName);
+                $user->save();
+                return $this->respondWithSuccess('Update avatar success');
+
+            }
+        }
+        return $this->respondWithError('Update avatar not success');
     }
 }

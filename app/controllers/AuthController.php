@@ -9,14 +9,15 @@ class AuthController extends ControllerBase
         $parameter = $this->parserDataRequest();
         $user = Users::getUserByEmailAndPassword($parameter);
         if (!$user) {
-            dd('Hack!');
+            return $this->respondWithError('Your email or password do not correct');
         }
         $key = base64_decode($this->config->application->jwtSecret);
         $time = time();
+        $expiresIn = $time + 86400*365;
         $token = [
             'iss' =>  'http://lackky.com',
             'iat' =>  $time,
-            'exp' =>  $time + 86400,
+            'exp' =>  $expiresIn,
             'data' =>[
                 'email' => $user->getEmail(),
                 'id' => $user->getId()
@@ -25,7 +26,8 @@ class AuthController extends ControllerBase
         $jwt = JWT::encode($token, $key);
         return $this->respondWithArray([
             'message' => 'Successful Login',
-            'token' => $jwt
+            'token' => $jwt,
+            'expiresIn' => $expiresIn
         ]);
     }
 
@@ -38,5 +40,4 @@ class AuthController extends ControllerBase
     {
         
     }
-
 }

@@ -496,6 +496,12 @@ class Users extends Model
             'createdAt' => 'createdAt'
         ];
     }
+
+    /**
+     * @param null $parameters
+     *
+     * @return Model
+     */
     public static function findFirstByEmail($parameters = null)
     {
         return parent::findFirstByEmail($parameters);

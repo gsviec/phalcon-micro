@@ -19,6 +19,7 @@ $users->get('/', 'list');
 $users->get('/{email}', 'item');
 $users->post('/', 'add');
 $users->put('/{id}', 'update');
+$users->post('/avatar', 'avatar');
 
 $app->mount($users);
 

@@ -162,7 +162,7 @@ class ControllerBase extends Controller
      *
      * @return \Phalcon\Http\ResponseInterface
      */
-    protected function respondWithError($message, $errorCode = '400')
+    public function respondWithError($message, $errorCode = '400')
     {
         //$this->logger->error($message);
         return $this->respondWithArray([
@@ -332,5 +332,16 @@ class ControllerBase extends Controller
             }
         }
         return $posts;
+    }
+
+    /**
+     * @return mixed|null
+     */
+    public function getCurrentUser()
+    {
+        if ($this->cookies->has('auth')) {
+            return $this->cookies->get('auth')->getValue()->data;
+        }
+        return null;
     }
 }
