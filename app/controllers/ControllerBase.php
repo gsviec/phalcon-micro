@@ -1,14 +1,9 @@
 <?php
-
-use App\Models\ModelBase;
-use App\Responses\JsonResponse;
-use League\Fractal\Manager;
 use League\Fractal\Pagination\Cursor;
 use League\Fractal\Pagination\PhalconFrameworkPaginatorAdapter;
 use League\Fractal\Resource\Collection;
 use League\Fractal\Resource\Item;
 use Phalcon\Mvc\Controller;
-use Phalcon\Mvc\Dispatcher;
 use Phalcon\Paginator\Adapter\Model as PaginatorModel;
 use Phalcon\Paginator\Adapter\NativeArray as PaginatorNativeArray;
 use Phalcon\Paginator\Adapter\QueryBuilder as PaginatorQueryBuilder;
@@ -143,12 +138,10 @@ class ControllerBase extends Controller
     }
 
     /**
-     * @param array $data
-     * @param array $headers
-     *
+     * @param array $data*
      * @return \Phalcon\Http\ResponseInterface
      */
-    protected function respondWithArray(array $data, array $headers = [])
+    public function respondWithArray(array $data)
     {
         $response = new Phalcon\Http\Response();
         $response->setContentType('application/json', 'UTF-8');

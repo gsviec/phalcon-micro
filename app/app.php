@@ -19,9 +19,19 @@ $users->get('/', 'list');
 $users->get('/{email}', 'item');
 $users->post('/', 'add');
 $users->put('/{id}', 'update');
-$users->post('/avatar', 'avatar');
-
+$users->put('/avatar', 'avatar');
+$users->put('/password', 'password');
+$users->get('/me', 'me');
 $app->mount($users);
+
+$follow = new MicroCollection();
+$follow->setHandler(new FollowController());
+$follow->setPrefix('/follow');
+$follow->post('/', 'add');
+$follow->delete('/', 'delete');
+$follow->get('/me', 'me');
+
+$app->mount($follow);
 
 $auth = new MicroCollection();
 $auth->setHandler(new AuthController());

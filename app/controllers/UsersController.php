@@ -106,4 +106,28 @@ class UsersController extends ControllerBase
         }
         return $this->respondWithError('Update avatar not success');
     }
+
+    public function password()
+    {
+        $data = $this->parserDataRequest();
+        $user = Users::findFirst($this->getCurrentUser()->id);
+        if (!$user) {
+            //@TODO
+            return $this->respondWithError('Unauthorized');
+        }
+        $user->setPassword($this->security->hash($data['password']));
+        if (!$user->save($data)) {
+            foreach ($user->getMessages() as $m) {
+                return $this->respondWithError('Update password fall');
+            }
+        }
+        return $this->respondWithSuccess('Update password success');
+    }
+    public function me()
+    {
+        if ($this->getCurrentUser()) {
+            return $this->respondWithArray(get_object_vars($this->getCurrentUser()));
+        }
+        return $this->respondWithError('Unauthorized');
+    }
 }

@@ -4,7 +4,7 @@
 
 Method: POST
 Content-Type: application/json
-Endpoint: https://lackky.com/v1/users
+Endpoint: export HOST=https://lackky.com/v1/users
 
 Request Body Payload
 
@@ -26,7 +26,7 @@ Sample request
 
 ``` 
 curl -d '{"email" : "hello@lackky.com", "password": "lackkylove", "fullName" : "Lackky"}'
-\-H "Content-Type: application/json" -X POST https://lackky.com/v1/users
+\-H "Content-Type: application/json" -X POST ${HOST}
 ```
 Sample response 
 ```
@@ -45,4 +45,11 @@ Sample response
 
 ### Update password
 
+``` 
+curl -d '{""password": "lackkylove"}' 
+\-H "Content-Type: application/json" -X PUT ${HOST}/password
+
+``'
+
 ### Update 
+
