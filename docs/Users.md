@@ -3,16 +3,18 @@
 ### Create users
 
 Method: POST
+
 Content-Type: application/json
+
 Endpoint: export HOST=https://lackky.com/v1/users
 
 Request Body Payload
 
 | Property Name        | Type           | Description  |
 | -------------        |:---------------:| -----:|
-| email                | string       | Email is required |
+| email                | string       |   Email is required |
 | password             | string       |   Password is required |
-| bio                  | string      |    Can empty|
+| bio                  | string       |    Can empty|
 
 Response Payload
 
@@ -41,15 +43,36 @@ Sample response
 ```
 ### Update users
 
+``` 
+curl -d '{"fullName" : "Lackky", "bio" : " Iam developer", "phone" : "012345678"}'
+\ -H "Content-Type: application/json" -X PUT ${HOST}
+```
+
+
 ### Update avatar
+
+
 
 ### Update password
 
 ``` 
-curl -d '{""password": "lackkylove"}' 
-\-H "Content-Type: application/json" -X PUT ${HOST}/password
+curl -d '{"password": "lackkylove"}' 
+\ -H "Content-Type: application/json" -X PUT ${HOST}/password
 
-``'
+```
 
-### Update 
 
+### Get current users
+
+```
+curl -H "Content-Type: application/json" -X GET ${HOST}/me
+```
+
+Sample response
+
+``` 
+{
+    "email": "thien01@gmail.cokm",
+    "id": 7
+}
+```

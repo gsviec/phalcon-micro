@@ -88,11 +88,9 @@ class UsersController extends ControllerBase
             $files = $this->request->getUploadedFiles();
             // Print the real file names and sizes
             foreach ($files as $file) {
-                $fileName = md5($this->getCurrentUser()->id);
+                $fileName = md5($this->getCurrentUser()->id) . '.png';
                 // Move the file into the application
-                $file->moveTo(
-                    'files/' . $fileName . '.png'
-                );
+                $file->moveTo('files/' . $fileName);
                 $user = Users::findFirst($this->getCurrentUser()->id);
                 if (!$user) {
                     //@TODO

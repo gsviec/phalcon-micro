@@ -82,7 +82,7 @@ class Users extends Model
      *
      * @var integer
      */
-    protected $birthdate;
+    protected $birthDate;
 
     /**
      *
@@ -245,15 +245,15 @@ class Users extends Model
     }
 
     /**
-     * Method to set the value of field birthdate
+     * Method to set the value of field birthDate
      *
-     * @param integer $birthdate
+     * @param integer $birthDate
      *
      * @return $this
      */
-    public function setBirthdate($birthdate)
+    public function setBirthDate($birthDate)
     {
-        $this->birthdate = $birthdate;
+        $this->birthDate = $birthDate;
 
         return $this;
     }
@@ -387,9 +387,10 @@ class Users extends Model
      *
      * @return integer
      */
-    public function getBirthdate()
+    public function getBirthDate()
     {
-        return $this->birthdate;
+
+        return date('d/m/Y', $this->birthDate);
     }
 
     /**
@@ -399,7 +400,7 @@ class Users extends Model
      */
     public function getCreatedAt()
     {
-        return $this->createdAt;
+        return date('d/m/Y', $this->createdAt);
     }
 
     /**
@@ -492,7 +493,7 @@ class Users extends Model
             'timezone' => 'timezone',
             'gender' => 'gender',
             'passwdForgotHash' => 'passwdForgotHash',
-            'birthdate' => 'birthdate',
+            'birthDate' => 'birthDate',
             'createdAt' => 'createdAt'
         ];
     }
@@ -531,6 +532,10 @@ class Users extends Model
         return $user;
     }
 
+    public function getAvatarUrl()
+    {
+        return 'https://cdn.lackky.com/avatar/' . $this->getAvatar();
+    }
 
 }
 

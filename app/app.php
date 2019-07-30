@@ -19,7 +19,7 @@ $users->get('/', 'list');
 $users->get('/{email}', 'item');
 $users->post('/', 'add');
 $users->put('/{id}', 'update');
-$users->put('/avatar', 'avatar');
+$users->post('/avatar', 'avatar');
 $users->put('/password', 'password');
 $users->get('/me', 'me');
 $app->mount($users);

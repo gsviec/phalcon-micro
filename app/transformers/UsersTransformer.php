@@ -8,7 +8,11 @@ class UsersTransformer extends BaseTransformer
             'id' => $user->getId(),
             'email' => $user->getEmail(),
             'phone' => $user->getPhone(),
-            'fullName' => $user->getFullName()
+            'bio' => $user->getBio(),
+            'birthDate' => $user->getBirthDate(),
+            'avatarUrl' => $user->getAvatarUrl(),
+            'fullName' => $user->getFullName(),
+            'createdAt' => $user->getCreatedAt()
         ];
     }
 }
