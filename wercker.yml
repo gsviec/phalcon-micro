@@ -14,8 +14,9 @@ build:
         code: vendor/bin/phpcs app --standard=PSR2 --ignore=app/migrations
 
 integration-test:
+  box:
+    id: gsviec/phalcon-wercker
   steps:
-
     - script:
         name: install dependencies
         code: composer install
