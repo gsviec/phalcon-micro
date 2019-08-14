@@ -3,7 +3,9 @@ box:
   ports:
     - "8080"
 
-build:
+
+
+integration-test:
   steps:
 
     - script:
@@ -12,4 +14,3 @@ build:
     - script:
         name: Check code to PSR2
         code: vendor/bin/phpcs app --standard=PSR2 --ignore=app/migrations
-
