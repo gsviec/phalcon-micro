@@ -13,3 +13,12 @@ build:
         name: Check code to PSR2
         code: vendor/bin/phpcs app --standard=PSR2 --ignore=app/migrations
 
+integration-test:
+  steps:
+
+    - script:
+        name: install dependencies
+        code: composer install
+    - script:
+        name: Check code to PSR2
+        code: vendor/bin/phpcs app --standard=PSR2 --ignore=app/migrations
