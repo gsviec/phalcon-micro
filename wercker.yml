@@ -12,6 +12,10 @@ build:
     - script:
         name: Check code to PSR2
         code: vendor/bin/phpcs app --standard=PSR2 --ignore=app/migrations
+    - mbrevda/phpcs:
+        directory: /app/app
+        standard: PSR2
+        report: full
 
 integration-test:
   steps:
