@@ -7,13 +7,14 @@
 use Phalcon\Mvc\Micro;
 use Phalcon\Mvc\Micro\Collection as MicroCollection;
 use Phalcon\Events\Manager;
+use App\Auth\AuthenticationMiddleware;
 
 $eventsManager = new Manager();
 $eventsManager->attach('micro', new AuthenticationMiddleware());
 $app->before(new AuthenticationMiddleware());
 
 $users = new MicroCollection();
-$users->setHandler(new UsersController());
+$users->setHandler(new App\Controllers\UsersController());
 $users->setPrefix('/users');
 $users->get('/', 'list');
 $users->get('/{email}', 'item');
@@ -24,17 +25,8 @@ $users->put('/password', 'password');
 $users->get('/me', 'me');
 $app->mount($users);
 
-$follow = new MicroCollection();
-$follow->setHandler(new FollowController());
-$follow->setPrefix('/follow');
-$follow->post('/', 'add');
-$follow->delete('/', 'delete');
-$follow->get('/me', 'me');
-
-$app->mount($follow);
-
 $auth = new MicroCollection();
-$auth->setHandler(new AuthController());
+$auth->setHandler(new App\Controllers\AuthController());
 $auth->setPrefix('/auth');
 $auth->post('/', 'login');
 $auth->get('/check', 'check');

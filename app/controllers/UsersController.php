@@ -1,7 +1,16 @@
 <?php
+namespace App\Controllers;
+
+use App\Aws\Storage;
+use App\Aws\UploadType;
+use App\Image\ImageManager;
+use App\Models\Services\User;
+use App\Models\Users;
+use App\Transformers\UsersTransformer;
 
 /**
  * Class UsersController
+ * @property Storage storage
  */
 class UsersController extends ControllerBase
 {
@@ -9,12 +18,10 @@ class UsersController extends ControllerBase
     /**
      * @return \Phalcon\Http\ResponseInterface
      */
-    public function list()
+    public function index()
     {
-        $users = Users::find();
-        $config = [];
-        $pagination = $this->pagination($users);
-        return $this->respondWithPagination($pagination, new UsersTransformer($config));
+        $user = new Users();
+        dd($user->toArray());
     }
 
     /**
@@ -24,82 +31,71 @@ class UsersController extends ControllerBase
      */
     public function item($email)
     {
-        $config = [];
-        $user = Users::findFirstByEmail($email);
-        if (!$user) {
-            return $this->respondWithError('The user do not exits!');
-        }
-        return $this->respondWithItem($user, new UsersTransformer($config));
     }
     /**
      * @return \Phalcon\Http\ResponseInterface
      */
     public function add()
     {
+        
         $data = $this->parserDataRequest();
-        if (!isset($data['email']) || !isset($data['password'])) {
+        if (!isset($data['email']) || !isset($data['password']) ||
+            !isset($data['username'])) {
             return $this->respondWithError('You need provider email and password');
         }
-        $user = Users::findFirstByEmail($data['email']);
-        if ($user) {
+        $userService = new User();
+        if ($userService->findFirstByEmailOrUsername($data['email'])) {
             return $this->respondWithError('That email is taken. Try another');
         }
+        if ($userService->findFirstByEmailOrUsername($data['username'])) {
+            return $this->respondWithError('That username is taken. Try another');
+        }
         $user = new Users();
+        $user->setRoleId(Users::ROLE_BUYER);
         $data['password'] = $this->security->hash($data['password']);
-
         if (!$user->save($data)) {
             foreach ($user->getMessages() as $m) {
-                return $this->respondWithError('Add user fall');
+                return $this->respondWithError('Add user fall '. $m->getMessage());
             }
         }
         return $this->respondWithItem($user, new UsersTransformer([]));
     }
     public function update()
     {
-        $data = $this->parserDataRequest();
-        if (!isset($data['email'])) {
-            return $this->respondWithError('You need provider email');
-        }
-        $user = Users::findFirstByEmail($data['email']);
-        if (!$user) {
-            return $this->respondWithError('The user do not exits!');
-        }
-        unset($data['password']);
-
-        if (!$user->save($data)) {
-            foreach ($user->getMessages() as $m) {
-                return $this->respondWithError('Update user fall');
-            }
-        }
-        return $this->respondWithSuccess('Update user success');
     }
+
+    /**
+     * @return \Phalcon\Http\ResponseInterface
+     */
     public function avatar()
     {
         $file = $_FILES['file'] ?? [];
         if (!isset($file)) {
             return $this->respondWithError('Nothing a data file', 404);
         }
-        //File need small then 50M
-        if (!isset($file['size']) || $file['size'] > 52428800) {
+        //File avatar need small then 4M
+        if (!isset($file['size']) || $file['size'] > UploadType::AVATAR_MAX_SIZE) {
             return $this->respondWithError('Sorry, your file is too large', 404);
         }
-
         if ($this->request->hasFiles()) {
             $files = $this->request->getUploadedFiles();
-            // Print the real file names and sizes
             foreach ($files as $file) {
-                $fileName = md5($this->getCurrentUser()->id) . '.png';
+                $fileName = md5($this->getCurrentUser()->id) . '.' . $file->getExtension();
+                $fileName = UploadType::USER_AVATAR . '/' . $fileName;
+                $this->resizeAvatar($fileName, $file);
                 // Move the file into the application
-                $file->moveTo('files/' . $fileName);
+                // For best practice we should put this action in queue
+                if (!$this->storage->uploadImage($fileName, $file)) {
+                    return $this->respondWithError('Update avatar not success');
+                }
                 $user = Users::findFirst($this->getCurrentUser()->id);
                 if (!$user) {
                     //@TODO
                     return $this->respondWithError('Unauthorized');
                 }
-                $user->setAvatar($fileName);
+                $user->setImage($fileName);
                 $user->save();
                 return $this->respondWithSuccess('Update avatar success');
-
             }
         }
         return $this->respondWithError('Update avatar not success');
@@ -107,19 +103,6 @@ class UsersController extends ControllerBase
 
     public function password()
     {
-        $data = $this->parserDataRequest();
-        $user = Users::findFirst($this->getCurrentUser()->id);
-        if (!$user) {
-            //@TODO
-            return $this->respondWithError('Unauthorized');
-        }
-        $user->setPassword($this->security->hash($data['password']));
-        if (!$user->save($data)) {
-            foreach ($user->getMessages() as $m) {
-                return $this->respondWithError('Update password fall');
-            }
-        }
-        return $this->respondWithSuccess('Update password success');
     }
     public function me()
     {
@@ -127,5 +110,18 @@ class UsersController extends ControllerBase
             return $this->respondWithArray(get_object_vars($this->getCurrentUser()));
         }
         return $this->respondWithError('Unauthorized');
+    }
+
+    /**
+     * @param $fileName
+     * @param object $file
+     */
+    protected function resizeAvatar($fileName, $file)
+    {
+        $resize = new ImageManager();
+        $item['fileName'] = $fileName;
+        $item['path'] = $file->getTempName();
+        $item['width'] = $item['height'] = 300;
+        return $resize->resize($item);
     }
 }

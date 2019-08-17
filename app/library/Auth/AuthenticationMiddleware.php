@@ -1,4 +1,5 @@
 <?php
+namespace App\Auth;
 
 use Firebase\JWT\JWT;
 use Phalcon\Mvc\Micro;
@@ -38,7 +39,7 @@ class AuthenticationMiddleware implements MiddlewareInterface
                     $decoded = JWT::decode($jwt[1], $key, ['HS256']);
                     // Send data auth for via cookies
                     $app->cookies->set('auth', $decoded);
-                } catch (Exception $e) {
+                } catch (\Exception $e) {
                     header('HTTP/1.0 401 Unauthorized');
                     die('Unauthorized');
                 }
@@ -73,6 +74,9 @@ class AuthenticationMiddleware implements MiddlewareInterface
             ['router' => '/auth', 'action' => 'login'],
             ['router' => '/users', 'action' => 'add']
         ];
+        if ('/' == $app->getRouter()->getRewriteUri()) {
+            return  true;
+        }
         foreach ($unsecuredRoutes as $route) {
             if ($route['router'] == $app->getRouter()->getRewriteUri()
                 && $route['action'] == $app->getActiveHandler()[1]

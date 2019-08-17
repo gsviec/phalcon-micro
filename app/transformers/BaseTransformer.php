@@ -1,4 +1,6 @@
 <?php
+namespace App\Transformers;
+
 use League\Fractal\TransformerAbstract;
 use Phalcon\Di;
 
@@ -63,7 +65,6 @@ class BaseTransformer extends TransformerAbstract
         }
 
         foreach ($object->apiColumnMultiMap() as $key => $value) {
-
             // Is this column even defined in our map
             if (isset($object->$key)) {
                 // Do we need to map this value to something defined in the map array
@@ -86,5 +87,4 @@ class BaseTransformer extends TransformerAbstract
 
         return $result;
     }
-
 }

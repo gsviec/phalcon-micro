@@ -1,7 +1,11 @@
 <?php
 
+use App\Aws\Storage;
+use Phalcon\Mvc\Dispatcher;
 use Phalcon\Mvc\Url as UrlResolver;
 use Phalcon\Mvc\View\Simple as View;
+use Phalcon\Mvc\Model\Manager as ModelsManager;
+use Phalcon\Events\Manager as EventsManager;
 
 /**
  * Shared configuration service
@@ -56,3 +60,20 @@ $di->setShared('db', function () {
     return $connection;
 });
 
+$di->set('dispatcher', function () use ($di) {
+        $eventsManager = new EventsManager;
+        //$eventsManager->attach('dispatch', new Acl());
+        //$eventsManager->attach('dispatch:beforeException', new NotFoundPlugin);
+        $dispatcher = new Dispatcher;
+        $dispatcher->setEventsManager($eventsManager);
+        $dispatcher->setDefaultNamespace('App\\Controllers');
+        return $dispatcher;
+});
+
+$di->set('modelsManager', function () {
+        return new ModelsManager();
+});
+
+$di->set('storage', function () {
+    return new Storage();
+});

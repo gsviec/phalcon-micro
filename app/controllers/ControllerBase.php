@@ -1,8 +1,12 @@
 <?php
+namespace App\Controllers;
+
 use League\Fractal\Pagination\Cursor;
 use League\Fractal\Pagination\PhalconFrameworkPaginatorAdapter;
 use League\Fractal\Resource\Collection;
 use League\Fractal\Resource\Item;
+use League\Fractal\Manager as FractalManager;
+use Phalcon\Http\Response;
 use Phalcon\Mvc\Controller;
 use Phalcon\Paginator\Adapter\Model as PaginatorModel;
 use Phalcon\Paginator\Adapter\NativeArray as PaginatorNativeArray;
@@ -91,8 +95,8 @@ class ControllerBase extends Controller
 
     protected function respondWithItem($item, $callback)
     {
-        $resource = new Item($item, $callback);
-        $fractal = new League\Fractal\Manager();
+        $resource  = new Item($item, $callback);
+        $fractal   = new FractalManager();
         $rootScope = $fractal->createData($resource);
 
         return $this->respondWithArray($rootScope->toArray());
@@ -102,7 +106,7 @@ class ControllerBase extends Controller
     protected function respondWithCollection($collection, $callback)
     {
         $resource = new Collection($collection, $callback);
-        $fractal = new League\Fractal\Manager();
+        $fractal = new FractalManager();
         $rootScope = $fractal->createData($resource);
 
         return $this->respondWithArray($rootScope->toArray());
@@ -115,7 +119,7 @@ class ControllerBase extends Controller
         $resource = new Collection($pagination->items, $callback);
         $resource->setPaginator(new PhalconFrameworkPaginatorAdapter($pagination));
 
-        $fractal = new League\Fractal\Manager();
+        $fractal = new FractalManager();
         $rootScope = $fractal->createData($resource);
         return $this->respondWithArray($rootScope->toArray());
     }
@@ -143,7 +147,7 @@ class ControllerBase extends Controller
      */
     public function respondWithArray(array $data)
     {
-        $response = new Phalcon\Http\Response();
+        $response = new Response();
         $response->setContentType('application/json', 'UTF-8');
 
         return $response->setContent(json_encode($data, JSON_NUMERIC_CHECK));
@@ -317,8 +321,7 @@ class ControllerBase extends Controller
         } else {
             $posts = $this->request->getRawBody(true);
         }
-
-        if (0 == count($posts)) {
+        if (is_array($posts) && 0 == count($posts)) {
             $posts = $this->request->getPost();
             if ($this->request->isPut()) {
                 $posts = $this->request->getPut();

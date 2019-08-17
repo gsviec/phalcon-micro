@@ -1,26 +1,46 @@
 <?php
+namespace App\Controllers;
 
+use App\Models\Services\User;
+use App\Models\Users;
 use Firebase\JWT\JWT;
 
 class AuthController extends ControllerBase
 {
+    /**
+     * @var Users
+     */
+    protected $user;
+
+    /**
+     * @return \Phalcon\Http\ResponseInterface
+     */
     public function login()
     {
         $parameter = $this->parserDataRequest();
-        $user = Users::getUserByEmailAndPassword($parameter);
-        if (!$user) {
-            return $this->respondWithError('Your email or password do not correct');
+        if (!isset($parameter['emailOrUsername'])) {
+            return $this->respondWithError('You need provider email and password');
+        }
+
+        $userService = $this->getDI()->getShared(User::class);
+        $this->user = $userService->findFirstByEmailOrUsername($parameter['emailOrUsername']);
+        if (!$this->user) {
+            return $this->respondWithError('This username or email do not exist');
+        }
+        if (!$this->security->checkHash($parameter['password'], $this->user->getPassword())) {
+            return $this->respondWithError('Wrong password combination');
         }
         $key = base64_decode($this->config->application->jwtSecret);
         $time = time();
-        $expiresIn = $time + 86400*365;
+        $expiresIn = $time + env('EXPIRES_TOKEN');
         $token = [
-            'iss' =>  'http://lackky.com',
+            'iss' =>  $this->request->getURI(),
             'iat' =>  $time,
             'exp' =>  $expiresIn,
             'data' =>[
-                'email' => $user->getEmail(),
-                'id' => $user->getId()
+                'id' => $this->user->getId(),
+                'email' => $this->user->getEmail(),
+                'username' => $this->user->getUsername(),
             ]
         ];
         $jwt = JWT::encode($token, $key);
@@ -31,13 +51,7 @@ class AuthController extends ControllerBase
         ]);
     }
 
-    public function check()
-    {
-
-    }
-
     public function logout()
     {
-        
     }
 }

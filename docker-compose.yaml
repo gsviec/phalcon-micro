@@ -2,36 +2,28 @@ version: '3.3'
 
 services:
     db:
-     image: mysql:5.7
+     image: mysql:8.0.17
      volumes:
        - db_data:/var/lib/mysql
+     command: --default-authentication-plugin=mysql_native_password
      environment:
        MYSQL_ROOT_PASSWORD: gsviec
        MYSQL_DATABASE: gsviec
        MYSQL_USER: gsviec
        MYSQL_PASSWORD: gsviec
      ports:
-       - 3306:3306
+       - 3307:3306
     php:
      depends_on:
        - db
-       - redis-master
+       - redis
      image: gsviec/php:7.3-alpine
-     build: .
      ports:
        - "80:80"
      volumes:
       - ./:/app
-     environment:
-       DB_HOST: db:3306
-       DB_USER: root
-       DB_PASSWORD: gsviec
-       DB_NAME: gsviec
-       APPLICATION_ENV: development
-       REDIS_HOST: redis-master
-       PHP_DISPLAY_ERRORS: 'On'
-       APACHE_SERVER_NAME: 'gsviec.dev'
-       JWT_SECRET: gsviec
+     env_file:
+       - .env
     phpmyadmin:
       restart: 'no'
       image: phpmyadmin/phpmyadmin:4.6
@@ -45,10 +37,9 @@ services:
         PMA_PORT: 3306
         PMA_USER: root
         PMA_PASSWORD: gsviec
-    redis-master:
+    redis:
       image: redis:alpine
       ports:
         - '6379:6379'
-
 volumes:
     db_data:

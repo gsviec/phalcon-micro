@@ -1,5 +1,7 @@
 <?php
 
+namespace App\Models;
+
 use Phalcon\Mvc\Model;
 use Phalcon\Mvc\Model\ResultInterface;
 use Phalcon\Mvc\Model\ResultSetInterface;
@@ -496,40 +498,6 @@ class Users extends Model
             'birthDate' => 'birthDate',
             'createdAt' => 'createdAt'
         ];
-    }
-
-    /**
-     * @param null $parameters
-     *
-     * @return Model
-     */
-    public static function findFirstByEmail($parameters = null)
-    {
-        return parent::findFirstByEmail($parameters);
-    }
-
-    /**
-     * @param $credentials
-     *
-     * @return bool|Users
-     */
-    public  static function getUserByEmailAndPassword($credentials)
-    {
-        $user = Users::findFirstByEmail($credentials['email']);
-
-        if (!$user) {
-            //$this->registerUserThrottling(0);
-            return false;
-        }
-
-        $di = \Phalcon\Di\FactoryDefault::getDefault();
-        // Check the password
-        if (!$di->get('security')->checkHash($credentials['password'], $user->getPassword())){
-            return false;
-        }
-        // Check if the user was flagged
-
-        return $user;
     }
 
     public function getAvatarUrl()
