@@ -14,6 +14,16 @@ try {
     $di = new FactoryDefault();
 
     /**
+     * Include Autoloader
+     */
+    include APP_PATH . '/config/loader.php';
+
+    value('12');
+    var_dump(APP_PATH);
+
+    dd('aa');
+
+    /**
      * Include Services
      */
     include APP_PATH . '/config/services.php';
@@ -21,12 +31,7 @@ try {
     /**
      * Get config service for use in inline setup below
      */
-    $config = $di->getConfig();
-
-    /**
-     * Include Autoloader
-     */
-    include APP_PATH . '/config/loader.php';
+    $config = $di->get('config');
 
     /**
      * Starting the application
