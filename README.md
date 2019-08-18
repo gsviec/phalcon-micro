@@ -21,8 +21,15 @@ library php so that you also need running command below
 docker-compose exec php bash
 cd /app/ && composer install
 cp env.example env
-phalcon migratetion
 ```
+
+### Migrate database
+
+```
+docker-compose exec flyway bash
+flyway -configFiles=sql/flyway/config.conf migrate
+```
+
 Then go to url http://localhost:9090 to import database, to get database
 file go to directory [database](./databases), when you finish just open again http://localhost
 
