@@ -18,11 +18,6 @@ try {
      */
     include APP_PATH . '/config/loader.php';
 
-    value('12');
-    var_dump(APP_PATH);
-
-    dd('aa');
-
     /**
      * Include Services
      */

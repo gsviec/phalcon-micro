@@ -85,7 +85,7 @@ class UsersMigration_100 extends Migration
                             'type' => Column::TYPE_CHAR,
                             'default' => "pending",
                             'notNull' => true,
-                            'size' => 1,
+                            'size' => 20,
                             'after' => 'avatar'
                         ]
                     ),
